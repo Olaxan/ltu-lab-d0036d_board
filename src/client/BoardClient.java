@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -29,24 +27,42 @@ public class BoardClient
 		while (true)
 		{
 			String cmd = scan.nextLine();
+			String[] cmds = cmd.split("[,\\s]+");
 			
 			if (cmd.equals("exit"))
 				break;
 			
-			if (cmd.equals("random"))
+			if (cmds[0].equals("random"))
 			{
-				for (int i = 0; i < 250; i++)
+				if (cmds.length == 4)
 				{
-					BoardPacket pack = new BoardPacket(rand.nextInt(200), rand.nextInt(200), rand.nextInt(Integer.MAX_VALUE));
-					byte[] bytes = pack.serializeBoardPacket();
-					DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, 4445);
-			        socket.send(packet);
+					int h, v, c;
+					
+					try
+					{
+						h	= Integer.parseInt(cmds[1]);
+						v	= Integer.parseInt(cmds[2]);
+						c	= Integer.parseInt(cmds[3]);
+					}
+					catch (NumberFormatException e)
+					{
+						System.out.println("Invalid random parameters - enter 'random horizontal, vertical, count'");
+						continue;
+					}
+					
+					for (int i = 0; i < c; i++)
+					{
+						BoardPacket pack = new BoardPacket(rand.nextInt(h), rand.nextInt(v), rand.nextInt(Integer.MAX_VALUE));
+						byte[] bytes = pack.serializeBoardPacket();
+						DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, 4445);
+						socket.send(packet);
+					}
 				}
+				else
+					System.out.println("Invalid parameter count - 'random horizontal, vertical, count'");
 				
 				continue;
 			}
-		
-			String[] cmds = cmd.split("[,\\s]+");
 			
 			if (cmds.length == 3)
 			{
@@ -60,7 +76,7 @@ public class BoardClient
 				}
 				catch (NumberFormatException e)
 				{
-					System.out.println("Invalid command");
+					System.out.println("Invalid command - 'enter x, y, rgb'");
 					continue;
 				}
 				
@@ -71,7 +87,7 @@ public class BoardClient
 				
 			}
 			else
-				System.out.println("Too few values in command - enter x, y, rgb");
+				System.out.println("Invalid parameter count - 'enter x, y, rgb'");
 		}
 		
 		socket.close();

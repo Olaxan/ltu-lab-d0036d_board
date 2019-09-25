@@ -12,6 +12,11 @@ import java.io.Serializable;
 public class BoardPacket implements Serializable
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3235908484463477345L;
+	
 	int x;
 	int y;
 	int rgb;

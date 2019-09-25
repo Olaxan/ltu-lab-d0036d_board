@@ -3,16 +3,17 @@ package server;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.IOException;
-import java.net.SocketException;
-
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 
 public class BoardView extends JFrame
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7582755213367327517L;
 	private BoardComponent contentPane;
 	private BoardListener server;
 	private Thread serverThread;

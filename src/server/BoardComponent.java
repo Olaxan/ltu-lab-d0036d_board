@@ -1,17 +1,19 @@
 package server;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-
 import javax.swing.JPanel;
 
 public class BoardComponent extends JPanel
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3954213753986046747L;
+	
 	private int horizontal;
 	private int vertical;
 
@@ -39,8 +41,6 @@ public class BoardComponent extends JPanel
 		int height = getHeight();
 		
 		g.drawImage(image, 0, 0, width, height, 0, 0, horizontal, vertical, null);
-		
-		System.out.println("Invalidated canvas");
 
 	}
 
