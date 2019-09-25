@@ -1,0 +1,90 @@
+package server;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.Vector;
+
+interface OnReceivedEventListener
+{
+	void onReceivedEvent(BoardPacket packet);
+}
+
+public class BoardListener implements Runnable
+{
+	private int port;
+	private DatagramSocket socket;
+	private byte[] buf = new byte[256];
+
+	private Vector<OnReceivedEventListener> onReceivedListeners;
+
+	public BoardListener(int port) throws SocketException
+	{
+		this.port = port;
+		this.socket = new DatagramSocket(port);
+		onReceivedListeners = new Vector<OnReceivedEventListener>();
+	}
+	
+	private void broadcastOnReceived(BoardPacket packet)
+	{
+		System.out.println("Packet sent to " + onReceivedListeners.size() + " subscribers");
+		
+		for (OnReceivedEventListener listener : onReceivedListeners)
+		{
+			listener.onReceivedEvent(packet);
+		}
+	}
+
+	public void addOnReceivedListener(OnReceivedEventListener listener)
+	{
+		onReceivedListeners.add(listener);
+	}
+
+	public void removeOnReceivedListener(OnReceivedEventListener listener)
+	{
+		onReceivedListeners.remove(listener);
+	}
+
+	public void startListening() throws IOException
+	{
+		while (true)
+		{
+			DatagramPacket request = new DatagramPacket(buf, buf.length);
+			socket.receive(request);
+			
+			try
+			{
+				System.out.println("Received packet!");
+				BoardPacket bp = BoardPacket.deserializeBoardPacket(request.getData());
+				broadcastOnReceived(bp);
+				
+			}
+			catch (ClassNotFoundException e)
+			{
+				System.err.println("Discarded malformed packet: " + e.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public void run()
+	{
+		try
+		{
+			System.out.println("Server is running on port " + port);
+			startListening();
+		} 
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
