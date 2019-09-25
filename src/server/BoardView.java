@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.border.EmptyBorder;
+import java.awt.Toolkit;
 
 
 public class BoardView extends JFrame
@@ -44,7 +45,9 @@ public class BoardView extends JFrame
 	 */
 	public BoardView()
 	{
-		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(BoardView.class.getResource("/res/space_invader.png")));
+		setTitle("Pixelzone");
+		setResizable(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 500);
 		contentPane = new BoardComponent(201, 201);
